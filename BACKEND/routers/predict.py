@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException   
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -16,17 +16,25 @@ def predict_age_crab(request: PredictionRequest, db: Session = Depends(get_db)):
         predicted_age = result['age']
 
         history_entry = PredictionHistoryBase(
-            **request.dict(),
-            age=predicted_age
+            sex=request.sex,
+            length=request.length,
+            diameter=request.diameter,
+            height=request.height,
+            weight=request.weight,
+            shucked_weight=request.shucked_weight,
+            viscera_weight=request.viscera_weight,
+            shell_weight=request.shell_weight,
+            age=predicted_age  
         )
 
-        create_prediction(db=db, history_entry=history_entry)
+        create_prediction(db=db, prediction=history_entry)
+
         return PredictResponse(age=predicted_age)
     
     except Exception as e:
-       raise HTTPException(status_code=500, detail=f"Terjadi kesalahan internal: {e}")
+        raise HTTPException(status_code=500, detail=f"Terjadi kesalahan internal: {e}")
 
 @router.get("/history", response_model=List[PredictionHistory])
-def read_history(skip: int = 0, limit: int = 100, db = Session(get_db)):
+def read_history(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     history = get_predictions(db, skip=skip, limit=limit)
     return history

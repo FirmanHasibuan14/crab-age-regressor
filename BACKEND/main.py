@@ -3,7 +3,7 @@ from routers import predict
 from core.config import setting
 from database.connection import create_tables
 
-create_tables
+create_tables()
 
 app = FastAPI(
     title = setting.APP_NAME
