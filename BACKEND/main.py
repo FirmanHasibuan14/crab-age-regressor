@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from routers import predict
-from core.config import Settings
+from core.config import setting
 from database.connection import create_tables
 
 create_tables
 
 app = FastAPI(
-    title = Settings.APP_NAME
+    title = setting.APP_NAME
 )
 
 app.include_router(predict.router, prefix="/predict", tags=['Predict'])
